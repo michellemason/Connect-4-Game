@@ -28,7 +28,7 @@ function makeHtmlBoard() {
   // TODO: get "htmlBoard" variable from the item in HTML w/ID of "board"
   const htmlBoard = document.getElementById('board');
   // TODO: add comment for this code
-  //creating new table rows named top & setting their IDs to 'column-top'
+  //creating new table rows for the clickable area named top & setting their IDs to 'column-top'
   const top = document.createElement("tr");
   top.setAttribute("id", "column-top");
   //When this top row gets clicked, invoke handleClick func.
@@ -36,7 +36,7 @@ function makeHtmlBoard() {
 
   //loop over the width of the board
   for (let x = 0; x < WIDTH; x++) {
-    //for each iteration, creade a new cell with and ID set to its numerical index, then append them to the row 'top' you created
+    //for each iteration, creade a new cell with an ID set to its numerical index, then append them to the row 'top' you created
     const headCell = document.createElement("td");
     headCell.setAttribute("id", x);
     top.append(headCell);
@@ -45,15 +45,16 @@ function makeHtmlBoard() {
   htmlBoard.append(top);
 
   // TODO: add comment for this code
+  //This will be the main board play area
   //loop over the height of the board and create new rows
   for (let y = 0; y < HEIGHT; y++) {
     const row = document.createElement("tr");
-    //then, for each row added, loop over the width to add new cells
+    //then, for each row added, loop over the width to add new cells to create columns
     for (let x = 0; x < WIDTH; x++) {
       const cell = document.createElement("td");
-      //set ID to be current index of the row loop - current index of cell loop
+      //set ID to be current index of the row loop 'dash' current index of column loop
       cell.setAttribute("id", `${y}-${x}`);
-      //append the new cells to each row
+      //append the new columns to each row
       row.append(cell);
     }
     //append the new rows (which now includes the cells) to the HTML page
@@ -97,6 +98,13 @@ function endGame(msg) {
 /** handleClick: handle click of column top to play piece */
 
 function handleClick(evt) {
+  //stop the game from continuing if game is over
+  if (checkForWin()) {
+    setTimeout(() => {
+      alert("Game is over, please refresh the page to start a new game!");
+    }, 800);
+    return;
+  }
   // get x from ID of clicked cell
   const x = +evt.target.id;
   // get next spot in column (if none, ignore click)
@@ -104,12 +112,10 @@ function handleClick(evt) {
   if (y === null) {
     return;
   }
-  // console.log(x, y);
+ 
   // place piece in board and add to HTML table
   // TODO: add line to update in-memory board
   board[y][x] = currPlayer;
-  // console.log(board[y][x]);
-  // console.log(currPlayer);
   placeInTable(y, x);
   // check for win
   if (checkForWin()) {
@@ -145,13 +151,18 @@ function checkForWin() {
 
   // TODO: read and understand this code. Add comments to help you.
 
+  //loop over the rows, then loop over each cell in the column. 
   for (let y = 0; y < HEIGHT; y++) {
     for (let x = 0; x < WIDTH; x++) {
+      //these are the coordinates needed to win horizontally
       let horiz = [[y, x], [y, x + 1], [y, x + 2], [y, x + 3]];
+      //to win vertically
       let vert = [[y, x], [y + 1, x], [y + 2, x], [y + 3, x]];
+      //to win diagonally right
       let diagDR = [[y, x], [y + 1, x + 1], [y + 2, x + 2], [y + 3, x + 3]];
+      //to win diagonally left
       let diagDL = [[y, x], [y + 1, x - 1], [y + 2, x - 2], [y + 3, x - 3]];
-
+      //if any of these are true, a winner will be called
       if (_win(horiz) || _win(vert) || _win(diagDR) || _win(diagDL)) {
         return true;
       }
